@@ -608,13 +608,14 @@ def NodeTranslation(Gname = "Graph_1000.dot"):
             node[1]["SMILE"] = gvar.DicStuct[hashD][3]
         else:
             node[1]["SMILE"] = "int"
+        if("contraction" in node[1]):
+            del node[1]["contraction"]
+        print(node)
     write_dot(GR,"UnGraph_1000.dot")
-    #ReactionClean()
     GR = gvar.GR
     for node in GR.nodes(data=True):
         if('contraction' in node[1]):
             del node[1]['contraction']
-    #write_dot(GR,Gname)
 
 
 
@@ -702,7 +703,6 @@ def ReactionCleanSub():
     print("total nodes after removal: ",N_nodes)
     print("total edges after removal: ",N_edges)
 
-
     gvar.GR = G_t
 
 def ReactionCleanGreyTrans():
@@ -751,8 +751,10 @@ def printUnknowStruc():
             continue
         gvar.DicStuct[key][2] = True
         count += 1
-       #FileName = "S_"+ gvar.DicStuct[key][4] +"_"+ str(key)[0:7]+ ".xyz"
-       #f = open("./specRec/"+FileName,"w")
+        if( len(gvar.DicStuct[key][0]) > 30 ):
+            gvar.DicStuct[key][3] = gvar.DicStuct[key][-1]
+            continue
+
         [SMILES, title] = \
         xyzfileToSMILE(gvar.DicStuct[key][0],gvar.DicStuct[key][1])
         if("N([O])[O]" in SMILES and not SMILES.startswith("N([O])[O]") and ".N([O])[O]" not in SMILES ): 
@@ -761,7 +763,6 @@ def printUnknowStruc():
             SMILES = SMILES.replace("[O]N([O])", "O=N(=O)")
         gvar.DicStuct[key][3] = SMILES
 
-   # print(count," structrues are transform to SMILES")
 
 
 ##

@@ -179,8 +179,8 @@ def parallelReadXYZ(Assign):
                         BlockRec_last  = copy.deepcopy(gvar.blockList)
                     else:
                         print("NotLast")
-                    print("Last line",fileLineCount,Assign,"fileend")
-                    print("Last line:",line,"fileend")
+                    #print("Last line",fileLineCount,Assign,"fileend")
+                    #print("Last line:",line,"fileend")
                     break
                 Natom = int(line.strip('\n') )
                 if(istep==1): gvar.atomList = [0]*Natom # BuildUpAtomListi
@@ -205,7 +205,7 @@ def parallelReadXYZ(Assign):
                     grpRec,nMol = buildNeigh_AtomicBased(10) # 20 anstrom into neighbour :::: Can be parallel
                 else:
                     grpRec,nMol = buildDistMart(bnd_cri)
-                print(nMol)
+                print("Total number of molecules: ", nMol)
                 gvar.blockList = [[0]*7 for i in range(nMol)] # BuildUpBlockList
                 Molid = 1
                 # Initial block
@@ -228,7 +228,7 @@ def parallelReadXYZ(Assign):
                 # Last Line
                 if(ifileCount==len(P_Files) and fileLineCount == endLine+1):
                     BlockRec_last  = copy.deepcopy(gvar.blockList)
-                    break
+                    break 
 
                 if(istep%5 == 0):
                     time_neibor1 = time.time()
@@ -249,10 +249,11 @@ def parallelReadXYZ(Assign):
               #   # print(Assign[3],fileLineCount)
               #   # print(istep,len(gvar.SpeciesCount))
                 istep += 1
-    print(BlockRec_first[0],"first")
-    print(BlockRec_last[0],"last")
+    #print(BlockRec_first[0],"first")
+    #print(BlockRec_last[0],"last")
     NodeTranslation("Graph_1000.dot")
     ReactionCleanSub()
+    print("end of sub")
     return([Assign[4], gvar.GR, gvar.DicStuct, gvar.DicMoleInfo, gvar.SpeciesCount,BlockRec_first,BlockRec_last])
 
 
@@ -418,10 +419,7 @@ def parallelReadLAMMPS(Assign):
                             Molid = Molid+1
 
                         if(pbc):
-                            #time_blk1 = time.time()
                             BlockInfoUpdatePBC(bnd_cri)
-                            #time_blk2 = time.time()
-                            #print("Initial Block time --- %s seconds ---" % (time_blk2 - time_blk1))
                         else:
                             pass
                         time2 = time.time()                                      #Time
@@ -443,11 +441,6 @@ def parallelReadLAMMPS(Assign):
                         print("Recent 100 steps use:", time_100step-time_process0, " seconds")
                         print("number of Mol:",nMol," at step: ",istep)
                         time_process0 =  time_100step
-                      # NodeC = gvar.GR.number_of_nodes()
-                      # if(NodeC - Nnode > 1000):
-                      #     NodeTranslation("Graph_1000.dot")
-                      #     ReactionCleanGreyTrans()
-                      # Nnode = NodeC
                     if(istep%1 == 0):
                         time0 = time.time()                                      #Time
                         BlockNeighborUpdate(15)
@@ -480,16 +473,10 @@ def parallelPool():
         AssiT.sort(key = lambda x: x[0])
 
     # Combine the return structures.  
+    print("rererer1")
     for itm in AssiT:
-       #print(itm[0],itm[1].number_of_nodes())
-       #print(itm[0],gvar.StepRecPerCore[itm[0]])
-        # Combine structure dictionary.
         gvar.DicStuct = {**gvar.DicStuct,**itm[2]}
         printUnknowStruc()
-      # print("======= Core: ",itm[0],"========")
-      # for step in itm[2]:
-      #     print(step,itm[2][step][3])
-
         # Combine moleinfomation dictionary.
         gvar.DicMoleInfo = {**gvar.DicMoleInfo,**itm[3]}
 
@@ -500,15 +487,15 @@ def parallelPool():
         # Combine reaction event graph.
         gvar.GR.add_nodes_from(list(itm[1].nodes(data=True)) )
         gvar.GR.add_edges_from(list(itm[1].edges(data=True)) )
+    print("rererer2")
     print(gvar.GR.number_of_edges())
     for i in range(1,len(AssiT)):
         compare2Step(AssiT[i-1][6],AssiT[i][5],gvar.StepRecPerCore[i-1][1])
+    print("rererer3")
 
-   #print(len(gvar.DicStuct),"lineDicStruct")
-   #for sml in  gvar.DicStuct:
-   #    print(sml,gvar.DicStuct[sml][3])
     NodeTranslation("Graph_1000.dot")
     ReactionClean()
+    print("rererer4")
 
 
     print(len(gvar.SpeciesCount),gvar.GR.number_of_edges())

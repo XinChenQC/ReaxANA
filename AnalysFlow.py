@@ -49,7 +49,7 @@ def trackBlocksXYZ():
 
                 # Build atom list.
                 grpRec,nMol = buildNeigh_AtomicBased(10) # 20 anstrom into neighbour :::: Can be parallel
-                print(nMol)
+                #print(nMol)
                 print("--- neighbor %s seconds1 ---" % (time.time() - p_time))
                 p_time = time.time()
                 gvar.blockList = [[0]*7 for i in range(nMol)] # BuildUpBlockList
@@ -227,7 +227,7 @@ def trackBlocksLAMMPS():
                         #Build neiborList and calculate first steps of molecules
                         grpRec,nMol = buildNeigh_AtomicBased(10) # 10 anstrom into neighbour :::: Can be parallel
 
-                        print(nMol)
+                        #print(nMol)
                         gvar.blockList = [[0]*7 for i in range(nMol)] # BuildUpBlockList
                         Molid = 1
                         # Initial block
