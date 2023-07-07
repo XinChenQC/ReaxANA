@@ -244,8 +244,6 @@ def parallelReadXYZ(Assign):
                 # Build Reaction Connection.
 
                 P_blockList = copy.deepcopy(gvar.blockList)
-                #
-
               #   # print(Assign[3],fileLineCount)
               #   # print(istep,len(gvar.SpeciesCount))
                 istep += 1
@@ -463,7 +461,7 @@ def parallelReadLAMMPS(Assign):
 def parallelPool():
     p = Pool(gvar.ncores)
     G_temp = nx.DiGraph() 
-    if(gvar.trajTyp =="xyz"):
+    if(gvar.trajTyp =="xyz" or gvar.trajTyp =="extxyz"):
         print(gvar.ProcessArrangement)
         AssiT = p.map(parallelReadXYZ,gvar.ProcessArrangement)
         AssiT.sort(key = lambda x: x[0])
@@ -473,7 +471,6 @@ def parallelPool():
         AssiT.sort(key = lambda x: x[0])
 
     # Combine the return structures.  
-    print("rererer1")
     for itm in AssiT:
         gvar.DicStuct = {**gvar.DicStuct,**itm[2]}
         printUnknowStruc()
@@ -487,15 +484,12 @@ def parallelPool():
         # Combine reaction event graph.
         gvar.GR.add_nodes_from(list(itm[1].nodes(data=True)) )
         gvar.GR.add_edges_from(list(itm[1].edges(data=True)) )
-    print("rererer2")
     print(gvar.GR.number_of_edges())
     for i in range(1,len(AssiT)):
         compare2Step(AssiT[i-1][6],AssiT[i][5],gvar.StepRecPerCore[i-1][1])
-    print("rererer3")
 
     NodeTranslation("Graph_1000.dot")
     ReactionClean()
-    print("rererer4")
 
 
     print(len(gvar.SpeciesCount),gvar.GR.number_of_edges())
